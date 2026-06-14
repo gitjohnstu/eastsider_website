@@ -12,8 +12,8 @@
     "db:seed": "prisma db seed",
     "db:setup": "docker compose up -d && prisma db push && prisma db seed"
   },
-  "prisma": {
-    "seed": "npx tsx prisma/seed.ts"
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
