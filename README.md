@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Eastsider.org
 
-## Getting Started
+Worcester, MA local guide — restaurants, places to go, and editorial articles.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router) + TypeScript
+- Tailwind CSS
+- PostgreSQL + Prisma
+- NextAuth (admin CMS)
+- Google Places API (optional; mock Worcester data included)
+
+## Quick start
+
+### 1. Start PostgreSQL
+
+```bash
+docker compose up -d
+```
+
+### 2. Install and seed
+
+```bash
+npm install
+npm run db:push
+npm run db:seed
+```
+
+### 3. Run dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Admin:** [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Default credentials (change in `.env`):
 
-## Learn More
+- Email: `admin@eastsider.org`
+- Password: `changeme`
 
-To learn more about Next.js, take a look at the following resources:
+## Environment variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Copy `.env.example` to `.env`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `GOOGLE_PLACES_API_KEY` | Optional — sync real places from Google |
+| `AUTH_SECRET` | NextAuth secret |
+| `ADMIN_EMAIL` | Admin login email |
+| `ADMIN_PASSWORD` | Admin login password |
+| `NEXT_PUBLIC_SITE_URL` | Public site URL (for SEO/sitemap) |
 
-## Deploy on Vercel
+## Deploy to Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push to GitHub and import in [Vercel](https://vercel.com)
+2. Add a Postgres database (Vercel Postgres, Supabase, or Neon)
+3. Set environment variables in Vercel project settings
+4. Add custom domain `eastsider.org`:
+   - In Vercel: Project → Settings → Domains → Add `eastsider.org`
+   - At your registrar: add the DNS records Vercel provides (usually `A`/`CNAME`)
+5. Deploy — `postinstall` runs `prisma generate`; run `prisma db push` and seed against production DB once
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Features
+
+- **Public site:** Home, article listing/detail, place pages, city-scoped search
+- **Admin CMS:** Draft/publish articles, link places, sync venue data
+- **Search:** PostgreSQL full-text search across articles and places in Worcester
+- **SEO:** Sitemap, robots.txt, Open Graph metadata
+
+## Google Places sync
+
+With `GOOGLE_PLACES_API_KEY` set, use **Admin → Sync from Google** to import real Worcester venues. Without a key, **Seed mock Worcester data** loads 20 real local place names with addresses.

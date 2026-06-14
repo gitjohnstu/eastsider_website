@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlaceCategory {
+  RESTAURANT
+  BAR
+  CAFE
+  PARK
+  MUSEUM
+  ATTRACTION
+  OTHER
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Place {
+  id            String        @id @default(cuid())
+  googlePlaceId String?       @unique
+  name          String
+  slug          String        @unique
+  address       String
+  lat           Float
+  lng           Float
+  category      PlaceCategory @default(OTHER)
+  neighborhood  String?
+  hours         Json?
+  phone         String?
+  website       String?
+  rating        Float?
+  photoUrls     String[]      @default([])
+  citySlug      String
+  lastSyncedAt  DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  articles      Article[]
+
+  @@index([citySlug])
+  @@index([category])
+  @@index([name])
+}
+
+model Article {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  excerpt     String?
+  body        String        @db.Text
+  status      ArticleStatus @default(DRAFT)
+  coverImage  String?
+  publishedAt DateTime?
+  placeId     String?
+  place       Place?        @relation(fields: [placeId], references: [id], onDelete: SetNull)
+  tags        Tag[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  articles Article[]
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
