@@ -25,12 +25,32 @@ export const siteConfig = {
 export const placeCategories = [
   { value: "RESTAURANT", label: "Restaurants" },
   { value: "CAFE", label: "Cafes" },
-  { value: "BAR", label: "Bars & Nightlife" },
+  { value: "BAR", label: "Bars" },
   { value: "PARK", label: "Parks" },
   { value: "MUSEUM", label: "Museums" },
   { value: "ATTRACTION", label: "Things to Do" },
+  { value: "GOLF", label: "Golf" },
   { value: "OTHER", label: "Other" },
 ] as const;
+
+export const navGroups = {
+  food: {
+    label: "Restaurants",
+    categories: ["RESTAURANT", "CAFE", "BAR"] as const,
+    subFilters: [
+      { value: "RESTAURANT" as const, label: "Restaurants" },
+      { value: "CAFE" as const, label: "Cafes" },
+      { value: "BAR" as const, label: "Bars" },
+    ],
+  },
+  golf: {
+    label: "Golf",
+    categories: ["GOLF"] as const,
+    subFilters: [] as { value: string; label: string }[],
+  },
+} as const;
+
+export type NavGroupKey = keyof typeof navGroups;
 
 export const neighborhoods = [
   "Downtown",

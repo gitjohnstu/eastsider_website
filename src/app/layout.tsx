@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Lora, Source_Sans_3 } from "next/font/google";
+import { Playfair_Display, DM_Sans } from "next/font/google";
 import { siteConfig } from "@/config/city";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
 
-const lora = Lora({
+const playfairDisplay = Playfair_Display({
   variable: "--font-serif",
   subsets: ["latin"],
 });
 
-const sourceSans = Source_Sans_3({
+const dmSans = DM_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
 });
@@ -37,8 +37,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${lora.variable} ${sourceSans.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-[#faf7ef] font-sans text-stone-900 antialiased">
+    <html lang="en" className={`${playfairDisplay.variable} ${dmSans.variable} h-full`}>
+      <body className="min-h-full flex flex-col bg-[#f6f2ea] font-sans text-stone-900 antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

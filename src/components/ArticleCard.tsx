@@ -5,46 +5,47 @@ import type { ArticleWithPlace } from "@/lib/queries";
 
 interface ArticleCardProps {
   article: ArticleWithPlace;
+  featured?: boolean;
 }
 
-export function ArticleCard({ article }: ArticleCardProps) {
+export function ArticleCard({ article, featured = false }: ArticleCardProps) {
   return (
     <Link
       href={`/articles/${article.slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-stone-200 bg-white transition-shadow hover:shadow-lg"
+      className="group flex flex-col overflow-hidden rounded-sm bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0_8px_28px_rgba(0,0,0,0.09)]"
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-stone-100">
+      <div className={`relative overflow-hidden bg-stone-100 ${featured ? "aspect-[16/9]" : "aspect-[16/10]"}`}>
         {article.coverImage ? (
           <Image
             src={article.coverImage}
             alt={article.title}
             fill
-            className="object-cover transition duration-500 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover transition duration-700 group-hover:scale-105"
+            sizes={featured ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
           />
         ) : (
-          <div className="flex h-full items-center justify-center bg-stone-100">
-            <span className="font-serif text-2xl font-bold text-stone-300">
+          <div className="flex h-full items-center justify-center bg-[#f0ece3]">
+            <span className="font-serif italic text-2xl font-bold text-[#ccc4b8]">
               Eastsider
             </span>
           </div>
         )}
       </div>
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-6">
         {article.place && (
-          <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-amber-700">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#9e7040]">
             {article.place.name}
           </p>
         )}
-        <h2 className="mt-1.5 font-serif text-xl font-bold leading-snug text-stone-950 transition-colors group-hover:text-amber-900">
+        <h2 className={`mt-2 font-serif font-bold leading-snug text-[#161210] transition-colors group-hover:text-[#9e7040] ${featured ? "text-3xl" : "text-xl"}`}>
           {article.title}
         </h2>
         {article.excerpt && (
-          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-stone-500">
+          <p className={`mt-2 text-sm leading-relaxed text-stone-500 ${featured ? "" : "line-clamp-2"}`}>
             {article.excerpt}
           </p>
         )}
-        <p className="mt-auto pt-4 text-xs text-stone-400">
+        <p className="mt-auto pt-5 text-xs tracking-wide text-stone-400">
           {formatDate(article.publishedAt)}
         </p>
       </div>

@@ -14,15 +14,16 @@ export default async function ArticlesPage() {
 
   return (
     <div>
-      <div className="border-b border-stone-200 bg-[#faf7ef]">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-amber-700">
+      <div className="bg-[#f6f2ea] border-b border-[#e3dcd4]">
+        <div className="mx-auto max-w-6xl px-4 pt-20 pb-16">
+          <div className="mb-7 h-px w-14 bg-[#9e7040]" />
+          <p className="text-[10px] font-semibold uppercase tracking-[0.5em] text-[#9e7040]">
             Worcester, MA
           </p>
-          <h1 className="mt-4 font-serif text-5xl font-bold tracking-tight text-stone-950">
+          <h1 className="mt-4 font-serif text-5xl font-bold tracking-tight text-[#161210]">
             Articles
           </h1>
-          <p className="mt-4 max-w-xl text-lg leading-relaxed text-stone-500">
+          <p className="mt-5 max-w-xl text-lg leading-relaxed text-stone-500">
             Local stories and guides across Worcester — restaurants, neighborhoods,
             museums, and weekend ideas.
           </p>

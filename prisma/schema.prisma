@@ -14,6 +14,7 @@ enum PlaceCategory {
   PARK
   MUSEUM
   ATTRACTION
+  GOLF
   OTHER
 }
 
@@ -42,6 +43,7 @@ model Place {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   articles      Article[]
+  events        Event[]
 
   @@index([citySlug])
   @@index([category])
@@ -79,4 +81,22 @@ model AdminUser {
   email        String   @unique
   passwordHash String
   createdAt    DateTime @default(now())
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  location    String?
+  placeId     String?
+  place       Place?    @relation(fields: [placeId], references: [id], onDelete: SetNull)
+  isPublished Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([startDate])
+  @@index([isPublished])
 }

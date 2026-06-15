@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #faf7ef;
-  --foreground: #0c0a08;
+  --background: #f6f2ea;
+  --foreground: #161210;
+  --gold: #9e7040;
+  --gold-hover: #b58248;
+  --border-subtle: #e3dcd4;
 }
 
 @theme inline {
@@ -24,15 +27,15 @@ body {
 }
 
 .font-serif {
-  font-family: var(--font-serif), Georgia, serif;
+  font-family: var(--font-serif), "Playfair Display", Georgia, serif;
 }
 
 .font-sans {
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-sans), "DM Sans", system-ui, sans-serif;
 }
 
 *:focus-visible {
-  outline: 2px solid #b45309;
+  outline: 2px solid var(--gold);
   outline-offset: 2px;
   border-radius: 2px;
 }

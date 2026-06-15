@@ -66,6 +66,26 @@ export async function getAllPlacesForAdmin() {
   });
 }
 
+export async function getUpcomingEvents(limit = 5) {
+  return prisma.event.findMany({
+    where: { isPublished: true, startDate: { gte: new Date() } },
+    include: { place: true },
+    orderBy: { startDate: "asc" },
+    take: limit,
+  });
+}
+
+export async function getAllEventsForAdmin() {
+  return prisma.event.findMany({
+    include: { place: true },
+    orderBy: { startDate: "asc" },
+  });
+}
+
+export async function getEventById(id: string) {
+  return prisma.event.findUnique({ where: { id }, include: { place: true } });
+}
+
 export type ArticleWithPlace = Awaited<
   ReturnType<typeof getPublishedArticles>
 >[number];
@@ -73,5 +93,9 @@ export type ArticleWithPlace = Awaited<
 export type PlaceWithArticles = NonNullable<
   Awaited<ReturnType<typeof getPlaceBySlug>>
 >;
+
+export type EventWithPlace = Awaited<
+  ReturnType<typeof getUpcomingEvents>
+>[number];
 
 export type ArticleStatusType = ArticleStatus;

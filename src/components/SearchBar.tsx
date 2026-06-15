@@ -29,16 +29,16 @@ export function SearchBar({ compact = false, dark = false, defaultQuery = "" }: 
         placeholder={compact ? "Search Worcester…" : "Search restaurants, parks, articles…"}
         className={
           dark
-            ? "w-full rounded-full border border-stone-700 bg-stone-900 px-4 py-2 text-sm text-stone-100 placeholder:text-stone-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
-            : "w-full rounded-full border border-stone-300 bg-white px-4 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-100"
+            ? "w-full rounded border border-stone-700 bg-stone-900 px-4 py-2 text-sm text-stone-100 placeholder:text-stone-500 focus:border-[#9e7040] focus:outline-none focus:ring-1 focus:ring-[#9e7040]/30"
+            : "w-full rounded border border-[#e3dcd4] bg-white px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-[#9e7040] focus:outline-none focus:ring-2 focus:ring-[#9e7040]/10"
         }
       />
       <button
         type="submit"
         className={
           dark
-            ? "rounded-full bg-amber-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-amber-600"
-            : "rounded-full bg-amber-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-amber-700"
+            ? "rounded bg-[#9e7040] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#b58248]"
+            : "rounded bg-[#161210] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-stone-800"
         }
       >
         Search

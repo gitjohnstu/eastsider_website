@@ -1,87 +1,96 @@
 import Link from "next/link";
 import { city, siteConfig } from "@/config/city";
 import { ArticleCard } from "@/components/ArticleCard";
-import { SearchBar } from "@/components/SearchBar";
-import { getPublishedArticles } from "@/lib/queries";
+import { EventCard } from "@/components/EventCard";
+import { getPublishedArticles, getUpcomingEvents } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const articles = await getPublishedArticles(6);
+  const [articles, events] = await Promise.all([
+    getPublishedArticles(5),
+    getUpcomingEvents(3),
+  ]);
+
+  const [featured, ...rest] = articles;
 
   return (
     <div>
-      {/* Hero */}
-      <section className="border-b border-stone-200 bg-[#faf7ef]">
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:py-32">
-          <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-amber-700">
+      {/* Compact masthead */}
+      <section className="bg-[#f6f2ea] border-b border-[#e3dcd4]">
+        <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
+          <div className="mb-5 h-px w-14 bg-[#9e7040]" />
+          <p className="text-[10px] font-semibold uppercase tracking-[0.5em] text-[#9e7040]">
             {city.name}, {city.state}
           </p>
-          <h1 className="mt-5 max-w-4xl font-serif text-5xl font-bold leading-[1.08] tracking-tight text-stone-950 sm:text-6xl lg:text-7xl">
-            {siteConfig.tagline}
+          <h1 className="mt-3 font-serif text-3xl italic font-bold tracking-tight text-[#161210] sm:text-4xl">
+            {siteConfig.name}
           </h1>
-          <p className="mt-7 max-w-lg text-lg leading-relaxed text-stone-500">
-            Read local stories about Worcester restaurants, bars, parks, and
-            places worth your weekend — then search everything in one place.
+          <p className="mt-2 text-sm text-stone-500 max-w-sm">
+            {siteConfig.tagline}
           </p>
-          <div className="mt-9 max-w-lg">
-            <SearchBar />
-          </div>
-          <div className="mt-6 flex flex-wrap gap-2.5">
-            <Link
-              href="/search?type=places&category=RESTAURANT"
-              className="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-amber-700 hover:text-amber-800"
-            >
-              Restaurants
-            </Link>
-            <Link
-              href="/search?type=places&category=ATTRACTION"
-              className="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-amber-700 hover:text-amber-800"
-            >
-              Things to Do
-            </Link>
-            <Link
-              href="/search?type=places&category=PARK"
-              className="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-amber-700 hover:text-amber-800"
-            >
-              Parks
-            </Link>
-            <Link
-              href="/articles"
-              className="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition hover:border-amber-700 hover:text-amber-800"
-            >
-              All Articles
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* Articles */}
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
-        <div className="flex items-baseline justify-between gap-4 border-b border-stone-900 pb-4">
-          <h2 className="font-serif text-2xl font-bold tracking-tight text-stone-950">
-            Latest from Worcester
-          </h2>
+      {/* Latest articles */}
+      <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+        <div className="flex items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-5">
+            <div className="h-px w-10 bg-[#9e7040]" />
+            <h2 className="font-serif text-2xl font-bold tracking-tight text-[#161210]">
+              Latest from Worcester
+            </h2>
+          </div>
           <Link
             href="/articles"
-            className="text-xs font-semibold uppercase tracking-wider text-amber-800 transition hover:text-amber-700"
+            className="text-xs font-semibold uppercase tracking-wider text-[#9e7040] transition hover:text-[#b58248]"
           >
             View all →
           </Link>
         </div>
 
         {articles.length > 0 ? (
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {articles.map((article) => (
-              <ArticleCard key={article.id} article={article} />
-            ))}
+          <div className="space-y-6">
+            {/* Featured article */}
+            {featured && (
+              <div className="lg:col-span-2">
+                <ArticleCard article={featured} featured />
+              </div>
+            )}
+            {/* Remaining articles */}
+            {rest.length > 0 && (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {rest.map((article) => (
+                  <ArticleCard key={article.id} article={article} />
+                ))}
+              </div>
+            )}
           </div>
         ) : (
-          <div className="mt-10 rounded-xl border border-dashed border-stone-300 bg-white p-10 text-center text-stone-500">
-            No published articles yet. Seed the database or publish from the admin.
+          <div className="rounded border border-dashed border-[#e3dcd4] bg-white p-10 text-center text-stone-500">
+            No published articles yet.
           </div>
         )}
       </section>
+
+      {/* Upcoming events — only shown when events exist */}
+      {events.length > 0 && (
+        <section className="border-t border-[#e3dcd4] bg-[#f6f2ea]">
+          <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+            <div className="flex items-center gap-5 mb-8">
+              <div className="h-px w-10 bg-[#9e7040]" />
+              <h2 className="font-serif text-2xl font-bold tracking-tight text-[#161210]">
+                Upcoming Events
+              </h2>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {events.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

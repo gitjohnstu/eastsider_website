@@ -59,12 +59,15 @@ async function searchArticlesFts(query: string, limit: number): Promise<SearchRe
 
 async function searchPlacesFts(
   query: string,
-  category: PlaceCategory | undefined,
+  categories: PlaceCategory[],
   limit: number,
 ): Promise<SearchResult[]> {
-  const categoryFilter = category
-    ? Prisma.sql`AND p.category = ${category}::"PlaceCategory"`
-    : Prisma.empty;
+  const categoryFilter =
+    categories.length === 1
+      ? Prisma.sql`AND p.category = ${categories[0]}::"PlaceCategory"`
+      : categories.length > 1
+        ? Prisma.sql`AND p.category::text = ANY(${categories})`
+        : Prisma.empty;
 
   const places = await prisma.$queryRaw<
     {
@@ -134,18 +137,22 @@ async function searchArticlesSimple(query: string, limit: number): Promise<Searc
 
 async function searchPlacesSimpleResults(
   query: string,
-  category: PlaceCategory | undefined,
+  categories: PlaceCategory[],
   limit: number,
 ): Promise<SearchResult[]> {
   const places = await prisma.place.findMany({
     where: {
       citySlug: city.slug,
-      ...(category ? { category } : {}),
-      OR: [
-        { name: { contains: query, mode: "insensitive" } },
-        { address: { contains: query, mode: "insensitive" } },
-        { neighborhood: { contains: query, mode: "insensitive" } },
-      ],
+      ...(categories.length > 0 ? { category: { in: categories } } : {}),
+      ...(query
+        ? {
+            OR: [
+              { name: { contains: query, mode: "insensitive" } },
+              { address: { contains: query, mode: "insensitive" } },
+              { neighborhood: { contains: query, mode: "insensitive" } },
+            ],
+          }
+        : {}),
     },
     take: limit,
     orderBy: { name: "asc" },
@@ -167,38 +174,44 @@ export async function searchCity(
   query: string,
   options: {
     type?: SearchType;
-    category?: PlaceCategory;
+    categories?: PlaceCategory[];
     limit?: number;
   } = {},
 ): Promise<SearchResult[]> {
-  const { type = "all", category, limit = 20 } = options;
+  const { type = "all", categories = [], limit = 20 } = options;
   const trimmed = query.trim();
 
-  if (!trimmed) return [];
+  const placesOnly = type === "places" || categories.length > 0;
 
   try {
-    const results: SearchResult[] = [];
+    if (trimmed) {
+      const ftsResults: SearchResult[] = [];
 
-    if (type === "all" || type === "articles") {
-      results.push(...(await searchArticlesFts(trimmed, limit)));
+      if (!placesOnly) {
+        ftsResults.push(...(await searchArticlesFts(trimmed, limit)));
+      }
+      ftsResults.push(...(await searchPlacesFts(trimmed, categories, limit)));
+
+      if (ftsResults.length > 0) {
+        return ftsResults.sort((a, b) => b.rank - a.rank).slice(0, limit);
+      }
     }
 
-    if (type === "all" || type === "places") {
-      results.push(...(await searchPlacesFts(trimmed, category, limit)));
-    }
+    // FTS either got no results or query was empty — use ILIKE / list all
+    const simpleResults: SearchResult[] = [];
 
-    return results.sort((a, b) => b.rank - a.rank).slice(0, limit);
+    if (!placesOnly && trimmed) {
+      simpleResults.push(...(await searchArticlesSimple(trimmed, limit)));
+    }
+    simpleResults.push(...(await searchPlacesSimpleResults(trimmed, categories, limit)));
+
+    return simpleResults.sort((a, b) => b.rank - a.rank).slice(0, limit);
   } catch {
     const results: SearchResult[] = [];
-
-    if (type === "all" || type === "articles") {
+    if (!placesOnly && trimmed) {
       results.push(...(await searchArticlesSimple(trimmed, limit)));
     }
-
-    if (type === "all" || type === "places") {
-      results.push(...(await searchPlacesSimpleResults(trimmed, category, limit)));
-    }
-
+    results.push(...(await searchPlacesSimpleResults(trimmed, categories, limit)));
     return results.sort((a, b) => b.rank - a.rank).slice(0, limit);
   }
 }

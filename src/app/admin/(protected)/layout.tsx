@@ -24,6 +24,9 @@ export default function AdminLayout({
               <Link href="/admin/places" className="hover:text-amber-800">
                 Places
               </Link>
+              <Link href="/admin/events" className="hover:text-amber-800">
+                Events
+              </Link>
             </nav>
           </div>
           <div className="flex items-center gap-3">
