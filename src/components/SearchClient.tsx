@@ -24,7 +24,20 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
   const [category, setCategory] = useState<PlaceCategory | undefined>(initialCategory);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [syncVersion, setSyncVersion] = useState(0);
   const abortRef = useRef<AbortController | null>(null);
+
+  // On group page mount: sync places from OpenStreetMap in the background.
+  // If new places were added, bump syncVersion to re-run the search effect.
+  useEffect(() => {
+    if (!group) return;
+    fetch(`/api/places/sync?group=${group}`)
+      .then((r) => r.json())
+      .then((data: { synced?: number; cached?: boolean }) => {
+        if (data.synced && data.synced > 0) setSyncVersion((v) => v + 1);
+      })
+      .catch(() => {/* sync failure is non-fatal */});
+  }, [group]);
 
   useEffect(() => {
     const trimmed = query.trim();
@@ -67,7 +80,7 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [query, group, category, router]);
+  }, [query, group, category, router, syncVersion]);
 
   function toggleCategory(val: PlaceCategory) {
     setCategory((prev) => (prev === val ? undefined : val));

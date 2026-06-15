@@ -37,6 +37,7 @@ export const navGroups = {
   food: {
     label: "Restaurants",
     categories: ["RESTAURANT", "CAFE", "BAR"] as const,
+    osmTags: '["amenity"~"^(restaurant|cafe|bar|pub|fast_food|night_club)$"]',
     subFilters: [
       { value: "RESTAURANT" as const, label: "Restaurants" },
       { value: "CAFE" as const, label: "Cafes" },
@@ -46,6 +47,7 @@ export const navGroups = {
   golf: {
     label: "Golf",
     categories: ["GOLF"] as const,
+    osmTags: '["leisure"="golf_course"]',
     subFilters: [] as { value: string; label: string }[],
   },
 } as const;
