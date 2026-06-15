@@ -39,7 +39,8 @@ export async function GET(request: Request) {
   let places;
   try {
     places = await fetchOverpassPlaces(groupDef.osmTags, controller.signal);
-  } catch {
+  } catch (err) {
+    console.error("[sync] Overpass fetch failed:", err instanceof Error ? err.message : err);
     return NextResponse.json({ error: "Overpass API unavailable" }, { status: 503 });
   } finally {
     clearTimeout(timeout);

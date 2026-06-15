@@ -1,3 +1,4 @@
+import https from "https";
 import { city } from "@/config/city";
 import { toSlug } from "@/lib/utils";
 import type { PlaceCategory } from "@prisma/client";
@@ -37,6 +38,51 @@ function mapCategory(tags: Record<string, string>): PlaceCategory {
   return "RESTAURANT";
 }
 
+// Use Node's native https module to bypass Next.js's patched fetch,
+// which sends headers (Accept-Encoding, x-nextjs-*) that Overpass rejects with 406.
+function httpsPost(url: string, body: string, signal?: AbortSignal): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const { hostname, pathname, search } = new URL(url);
+    const bodyBuf = Buffer.from(body, "utf8");
+
+    const req = https.request(
+      {
+        hostname,
+        path: pathname + search,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Content-Length": bodyBuf.length,
+          "User-Agent": "eastsider/1.0",
+        },
+      },
+      (res) => {
+        const chunks: Buffer[] = [];
+        res.on("data", (c: Buffer) => chunks.push(c));
+        res.on("end", () => {
+          const statusCode = res.statusCode ?? 0;
+          if (statusCode < 200 || statusCode >= 300) {
+            reject(new Error(`Overpass API error: ${statusCode}`));
+          } else {
+            resolve(Buffer.concat(chunks).toString("utf8"));
+          }
+        });
+      },
+    );
+
+    req.on("error", reject);
+
+    if (signal) {
+      signal.addEventListener("abort", () => {
+        req.destroy(new Error("Request aborted"));
+      });
+    }
+
+    req.write(bodyBuf);
+    req.end();
+  });
+}
+
 export async function fetchOverpassPlaces(
   osmTagFilter: string,
   signal?: AbortSignal,
@@ -45,17 +91,13 @@ export async function fetchOverpassPlaces(
   const bbox = `${bounds.south},${bounds.west},${bounds.north},${bounds.east}`;
   const query = `[out:json][timeout:20];(node${osmTagFilter}(${bbox});way${osmTagFilter}(${bbox});relation${osmTagFilter}(${bbox}););out center;`;
 
-  const res = await fetch("https://overpass-api.de/api/interpreter", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: `data=${encodeURIComponent(query)}`,
-    cache: "no-store",
+  const raw = await httpsPost(
+    "https://overpass-api.de/api/interpreter",
+    `data=${encodeURIComponent(query)}`,
     signal,
-  });
+  );
 
-  if (!res.ok) throw new Error(`Overpass API error: ${res.status}`);
-
-  const data = (await res.json()) as OverpassResponse;
+  const data = JSON.parse(raw) as OverpassResponse;
   const seen = new Set<string>();
   const places: NormalizedOsmPlace[] = [];
 
