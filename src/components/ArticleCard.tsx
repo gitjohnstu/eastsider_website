@@ -14,7 +14,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
       href={`/articles/${article.slug}`}
       className="group flex flex-col overflow-hidden rounded-sm bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0_8px_28px_rgba(0,0,0,0.09)]"
     >
-      <div className={`relative overflow-hidden bg-stone-100 ${featured ? "aspect-[16/9]" : "aspect-[16/10]"}`}>
+      <div className={`relative overflow-hidden bg-stone-100 ${featured ? "aspect-[16/7]" : "aspect-[16/10]"}`}>
         {article.coverImage ? (
           <Image
             src={article.coverImage}

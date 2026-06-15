@@ -37,16 +37,20 @@ function mapCategory(tags: Record<string, string>): PlaceCategory {
   return "RESTAURANT";
 }
 
-export async function fetchOverpassPlaces(osmTagFilter: string): Promise<NormalizedOsmPlace[]> {
+export async function fetchOverpassPlaces(
+  osmTagFilter: string,
+  signal?: AbortSignal,
+): Promise<NormalizedOsmPlace[]> {
   const { bounds, slug: citySlug } = city;
   const bbox = `${bounds.south},${bounds.west},${bounds.north},${bounds.east}`;
-  const query = `[out:json][timeout:30];(node${osmTagFilter}(${bbox});way${osmTagFilter}(${bbox});relation${osmTagFilter}(${bbox}););out center;`;
+  const query = `[out:json][timeout:20];(node${osmTagFilter}(${bbox});way${osmTagFilter}(${bbox});relation${osmTagFilter}(${bbox}););out center;`;
 
   const res = await fetch("https://overpass-api.de/api/interpreter", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `data=${encodeURIComponent(query)}`,
     cache: "no-store",
+    signal,
   });
 
   if (!res.ok) throw new Error(`Overpass API error: ${res.status}`);

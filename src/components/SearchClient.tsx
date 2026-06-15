@@ -24,6 +24,7 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
   const [category, setCategory] = useState<PlaceCategory | undefined>(initialCategory);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [syncVersion, setSyncVersion] = useState(0);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -31,12 +32,14 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
   // If new places were added, bump syncVersion to re-run the search effect.
   useEffect(() => {
     if (!group) return;
+    setSyncing(true);
     fetch(`/api/places/sync?group=${group}`)
       .then((r) => r.json())
       .then((data: { synced?: number; cached?: boolean }) => {
         if (data.synced && data.synced > 0) setSyncVersion((v) => v + 1);
       })
-      .catch(() => {/* sync failure is non-fatal */});
+      .catch(() => {/* sync failure is non-fatal */})
+      .finally(() => setSyncing(false));
   }, [group]);
 
   useEffect(() => {
@@ -139,6 +142,8 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
       <div className="mt-10">
         {loading ? (
           <p className="text-sm text-stone-400">Searching…</p>
+        ) : syncing && results.length === 0 ? (
+          <p className="text-sm text-stone-400">Finding Worcester places…</p>
         ) : !query.trim() && !group ? (
           <p className="text-stone-500">Start typing to see results.</p>
         ) : results.length === 0 ? (

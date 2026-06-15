@@ -51,16 +51,25 @@ export default async function HomePage() {
 
         {articles.length > 0 ? (
           <div className="space-y-6">
-            {/* Featured article */}
-            {featured && (
-              <div className="lg:col-span-2">
-                <ArticleCard article={featured} featured />
-              </div>
-            )}
-            {/* Remaining articles */}
-            {rest.length > 0 && (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {rest.map((article) => (
+            {/* Featured + 2 stacked cards side by side on desktop */}
+            <div className="grid gap-6 lg:grid-cols-3">
+              {featured && (
+                <div className="lg:col-span-2">
+                  <ArticleCard article={featured} featured />
+                </div>
+              )}
+              {rest.length > 0 && (
+                <div className="flex flex-col gap-6">
+                  {rest.slice(0, 2).map((article) => (
+                    <ArticleCard key={article.id} article={article} />
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Remaining articles in a row below */}
+            {rest.length > 2 && (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {rest.slice(2).map((article) => (
                   <ArticleCard key={article.id} article={article} />
                 ))}
               </div>
@@ -73,24 +82,26 @@ export default async function HomePage() {
         )}
       </section>
 
-      {/* Upcoming events — only shown when events exist */}
-      {events.length > 0 && (
-        <section className="border-t border-[#e3dcd4] bg-[#f6f2ea]">
-          <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-            <div className="flex items-center gap-5 mb-8">
-              <div className="h-px w-10 bg-[#9e7040]" />
-              <h2 className="font-serif text-2xl font-bold tracking-tight text-[#161210]">
-                Upcoming Events
-              </h2>
-            </div>
+      {/* Upcoming events — always shown */}
+      <section className="border-t border-[#e3dcd4] bg-[#f6f2ea]">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+          <div className="flex items-center gap-5 mb-8">
+            <div className="h-px w-10 bg-[#9e7040]" />
+            <h2 className="font-serif text-2xl font-bold tracking-tight text-[#161210]">
+              Upcoming Events
+            </h2>
+          </div>
+          {events.length > 0 ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {events.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
             </div>
-          </div>
-        </section>
-      )}
+          ) : (
+            <p className="text-sm text-stone-500">No upcoming events. Check back soon.</p>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

@@ -7,7 +7,10 @@ import type { PlaceCategory } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
-const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+// Only skip OSM sync once the DB has a healthy number of real places.
+// The mock seed adds ~20 places, so a threshold of 50 ensures the first real
+// OSM fetch always runs regardless of mock data.
+const SYNC_THRESHOLD = 50;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -20,25 +23,26 @@ export async function GET(request: Request) {
   const groupDef = navGroups[group];
   const categories = groupDef.categories as unknown as PlaceCategory[];
 
-  // Skip if any place in this category was synced within the last 6 hours
-  const recentlySynced = await prisma.place.findFirst({
-    where: {
-      category: { in: categories },
-      citySlug: "worcester-ma",
-      lastSyncedAt: { gte: new Date(Date.now() - SIX_HOURS_MS) },
-    },
-    select: { id: true },
+  // Skip only if we already have a full set of OSM places for this group
+  const placeCount = await prisma.place.count({
+    where: { category: { in: categories }, citySlug: "worcester-ma" },
   });
 
-  if (recentlySynced) {
+  if (placeCount >= SYNC_THRESHOLD) {
     return NextResponse.json({ synced: 0, cached: true });
   }
 
+  // Abort Overpass if it takes too long (safety net for serverless timeouts)
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25000);
+
   let places;
   try {
-    places = await fetchOverpassPlaces(groupDef.osmTags);
+    places = await fetchOverpassPlaces(groupDef.osmTags, controller.signal);
   } catch {
     return NextResponse.json({ error: "Overpass API unavailable" }, { status: 503 });
+  } finally {
+    clearTimeout(timeout);
   }
 
   let synced = 0;
