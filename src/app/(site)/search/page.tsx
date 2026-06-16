@@ -34,13 +34,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div>
-      <div className="bg-[#f6f2ea] border-b border-[#e3dcd4]">
-        <div className="mx-auto max-w-6xl px-4 pt-20 pb-16">
-          <div className="mb-7 h-px w-14 bg-[#9e7040]" />
-          <p className="text-[10px] font-semibold uppercase tracking-[0.5em] text-[#9e7040]">
+      <div className="bg-[#f5efe6] border-b border-[#dbd3c5]">
+        <div className="mx-auto max-w-6xl px-4 pt-16 pb-14">
+          <p className="text-[9px] font-semibold uppercase tracking-[0.55em] text-[#9e7040]/70">
             {city.name}, {city.state}
           </p>
-          <h1 className="mt-4 font-serif text-5xl font-bold tracking-tight text-[#161210]">
+          <h1 className="mt-4 font-display text-6xl italic font-bold tracking-tight text-[#0f0c0a]">
             {heading}
           </h1>
         </div>

@@ -15,36 +15,37 @@ export function EventCard({ event }: EventCardProps) {
     : null;
 
   return (
-    <div className="flex gap-5 rounded-sm bg-white shadow-[0_1px_4px_rgba(0,0,0,0.06)] p-6">
-      {/* Date column */}
-      <div className="flex shrink-0 flex-col items-center justify-start pt-1 w-14 text-center">
-        <span className="font-serif text-4xl font-bold leading-none text-[#9e7040]">{day}</span>
-        <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-[#9e7040]">{month}</span>
+    <div className="flex flex-col border border-[#dbd3c5] bg-white rounded-sm p-7 transition-colors hover:border-[#9e7040]/35">
+      {/* Date header */}
+      <div className="flex items-end gap-3 pb-5 border-b border-[#dbd3c5]">
+        <span className="font-display text-6xl font-bold leading-none text-[#9e7040] italic">
+          {day}
+        </span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#9e7040]/60 pb-1">
+          {month}
+        </span>
       </div>
 
-      {/* Divider */}
-      <div className="w-px self-stretch bg-[#e3dcd4]" />
-
-      {/* Content column */}
-      <div className="flex flex-col min-w-0">
+      {/* Content */}
+      <div className="flex flex-col mt-5 min-w-0">
         {event.place && (
-          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#9e7040]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#9e7040]">
             {event.place.name}
           </p>
         )}
-        <h3 className="mt-1 font-serif text-lg font-bold leading-snug text-[#161210]">
+        <h3 className="mt-1.5 font-display text-xl italic font-bold leading-snug text-[#0f0c0a]">
           {event.title}
         </h3>
-        <p className="mt-1.5 text-xs text-stone-500">
+        <p className="mt-2 text-xs text-stone-400 tracking-wide">
           {time}{endTime ? ` – ${endTime}` : ""}
         </p>
         {(event.location ?? event.place?.address) && (
-          <p className="mt-1 text-xs text-stone-500 truncate">
+          <p className="mt-0.5 text-xs text-stone-400 truncate">
             {event.location ?? event.place?.address}
           </p>
         )}
         {event.description && (
-          <p className="mt-2 text-sm leading-relaxed text-stone-500 line-clamp-2">
+          <p className="mt-3 text-sm leading-relaxed text-stone-500 line-clamp-2">
             {event.description}
           </p>
         )}

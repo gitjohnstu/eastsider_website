@@ -45,22 +45,22 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   return (
     <article>
       {/* Article header */}
-      <div className="border-b border-stone-200 bg-[#faf7ef]">
+      <div className="border-b border-[#dbd3c5] bg-[#f5efe6]">
         <div className="mx-auto max-w-3xl px-4 py-16">
           {article.place && (
-            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-amber-700">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.45em] text-[#9e7040]">
               {article.place.name}
             </p>
           )}
-          <h1 className="mt-4 font-serif text-4xl font-bold leading-tight text-stone-950 sm:text-5xl">
+          <h1 className="mt-4 font-display text-4xl italic font-bold leading-tight text-[#0f0c0a] sm:text-5xl">
             {article.title}
           </h1>
           {article.excerpt && (
-            <p className="mt-5 text-xl leading-relaxed text-stone-500">
+            <p className="mt-5 text-lg leading-relaxed text-stone-500">
               {article.excerpt}
             </p>
           )}
-          <p className="mt-5 text-sm text-stone-400">
+          <p className="mt-6 text-xs tracking-widest text-stone-400 uppercase">
             Published {formatDate(article.publishedAt)}
           </p>
         </div>

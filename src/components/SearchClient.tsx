@@ -161,13 +161,13 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
               : `No ${groupDef?.label.toLowerCase() ?? "places"} found yet.`}
           </p>
         ) : (
-          <ul className="divide-y divide-[#e3dcd4] rounded-sm border border-[#e3dcd4] bg-white overflow-hidden">
+          <ul className="divide-y divide-[#dbd3c5] rounded-sm border border-[#dbd3c5] bg-white overflow-hidden">
             {results.map((result) => (
               <li
                 key={`${result.type}-${result.id}`}
                 className="px-7 py-6 transition hover:bg-[#faf8f4]"
               >
-                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#9e7040]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#9e7040]">
                   {result.type === "article"
                     ? "Article"
                     : categoryLabel(result.category ?? "OTHER")}
@@ -178,7 +178,7 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
                       ? `/articles/${result.slug}`
                       : `/places/${result.slug}`
                   }
-                  className="mt-1.5 block font-serif text-2xl font-bold text-[#161210] transition hover:text-[#9e7040]"
+                  className="mt-1.5 block font-display text-2xl italic font-bold text-[#0f0c0a] transition hover:text-[#9e7040]"
                 >
                   {result.title}
                 </Link>

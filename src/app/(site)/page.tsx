@@ -16,42 +16,47 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* Compact masthead */}
-      <section className="bg-[#f6f2ea] border-b border-[#e3dcd4]">
-        <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
-          <div className="mb-5 h-px w-14 bg-[#9e7040]" />
-          <p className="text-[10px] font-semibold uppercase tracking-[0.5em] text-[#9e7040]">
-            {city.name}, {city.state}
-          </p>
-          <h1 className="mt-3 font-serif text-3xl italic font-bold tracking-tight text-[#161210] sm:text-4xl">
+      {/* Editorial masthead */}
+      <section className="bg-[#f5efe6] border-b border-[#dbd3c5]">
+        <div className="mx-auto max-w-6xl px-4 pt-12 pb-10 sm:pt-16 sm:pb-14">
+          <div className="flex items-center justify-between mb-6">
+            <span className="text-[9px] font-semibold uppercase tracking-[0.55em] text-[#9e7040]/70">
+              {city.name}, {city.state}
+            </span>
+            <span className="text-[9px] tracking-widest text-stone-400">
+              {new Date().getFullYear()}
+            </span>
+          </div>
+          <div className="h-[1.5px] w-full bg-[#dbd3c5]" />
+          <h1 className="mt-6 font-display text-6xl italic font-bold tracking-[-0.02em] text-[#0f0c0a] leading-none sm:text-8xl">
             {siteConfig.name}
           </h1>
-          <p className="mt-2 text-sm text-stone-500 max-w-sm">
-            {siteConfig.tagline}
-          </p>
+          <div className="mt-7 flex items-center gap-5">
+            <div className="h-px flex-1 bg-[#9e7040]/20" />
+            <p className="shrink-0 text-[9px] font-semibold uppercase tracking-[0.55em] text-[#9e7040]">
+              The Worcester Guide
+            </p>
+            <div className="h-px flex-1 bg-[#9e7040]/20" />
+          </div>
         </div>
       </section>
 
       {/* Latest articles */}
       <section className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-        <div className="flex items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-5">
-            <div className="h-px w-10 bg-[#9e7040]" />
-            <h2 className="font-serif text-2xl font-bold tracking-tight text-[#161210]">
-              Latest from Worcester
-            </h2>
-          </div>
+        <div className="flex items-center justify-between mb-9">
+          <h2 className="font-display text-4xl italic font-bold text-[#0f0c0a]">
+            Latest from Worcester
+          </h2>
           <Link
             href="/articles"
-            className="text-xs font-semibold uppercase tracking-wider text-[#9e7040] transition hover:text-[#b58248]"
+            className="text-[10px] font-semibold uppercase tracking-[0.4em] text-[#9e7040] transition hover:text-[#b07838]"
           >
-            View all →
+            All articles
           </Link>
         </div>
 
         {articles.length > 0 ? (
           <div className="space-y-6">
-            {/* Featured + 2 stacked cards side by side on desktop */}
             <div className="grid gap-6 lg:grid-cols-3">
               {featured && (
                 <div className="lg:col-span-2">
@@ -66,7 +71,6 @@ export default async function HomePage() {
                 </div>
               )}
             </div>
-            {/* Remaining articles in a row below */}
             {rest.length > 2 && (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {rest.slice(2).map((article) => (
@@ -76,18 +80,17 @@ export default async function HomePage() {
             )}
           </div>
         ) : (
-          <div className="rounded border border-dashed border-[#e3dcd4] bg-white p-10 text-center text-stone-500">
+          <div className="rounded-sm border border-dashed border-[#dbd3c5] bg-white p-10 text-center text-stone-500">
             No published articles yet.
           </div>
         )}
       </section>
 
       {/* Upcoming events — always shown */}
-      <section className="border-t border-[#e3dcd4] bg-[#f6f2ea]">
+      <section className="border-t border-[#dbd3c5] bg-[#f5efe6]">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
-          <div className="flex items-center gap-5 mb-8">
-            <div className="h-px w-10 bg-[#9e7040]" />
-            <h2 className="font-serif text-2xl font-bold tracking-tight text-[#161210]">
+          <div className="mb-9">
+            <h2 className="font-display text-4xl italic font-bold text-[#0f0c0a]">
               Upcoming Events
             </h2>
           </div>

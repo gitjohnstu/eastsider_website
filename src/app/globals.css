@@ -1,11 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f2ea;
-  --foreground: #161210;
-  --gold: #9e7040;
-  --gold-hover: #b58248;
-  --border-subtle: #e3dcd4;
+  --background: #f5efe6;
+  --foreground: #0f0c0a;
+  --gold: #96682e;
+  --gold-light: #c49040;
+  --gold-hover: #b07838;
+  --border-subtle: #dbd3c5;
+  --cream-dark: #ede5d8;
+  --ink: #0f0c0a;
 }
 
 @theme inline {
@@ -13,6 +16,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
+  --font-display: var(--font-display);
 }
 
 html {
@@ -34,8 +38,32 @@ body {
   font-family: var(--font-sans), "DM Sans", system-ui, sans-serif;
 }
 
+.font-display {
+  font-family: var(--font-display), "Cormorant Garamond", Georgia, serif;
+}
+
 *:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+/* Animated underline for nav links */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #c49040;
+  transition: width 0.25s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
 }
