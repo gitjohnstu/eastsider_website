@@ -7,9 +7,10 @@ interface SearchBarProps {
   compact?: boolean;
   dark?: boolean;
   defaultQuery?: string;
+  citySlug?: string;
 }
 
-export function SearchBar({ compact = false, dark = false, defaultQuery = "" }: SearchBarProps) {
+export function SearchBar({ compact = false, dark = false, defaultQuery = "", citySlug }: SearchBarProps) {
   const router = useRouter();
   const [query, setQuery] = useState(defaultQuery);
 
@@ -17,7 +18,8 @@ export function SearchBar({ compact = false, dark = false, defaultQuery = "" }: 
     e.preventDefault();
     const trimmed = query.trim();
     if (!trimmed) return;
-    router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+    const base = citySlug ? `/${citySlug}/search` : "/search";
+    router.push(`${base}?q=${encodeURIComponent(trimmed)}`);
   }
 
   return (
@@ -26,7 +28,7 @@ export function SearchBar({ compact = false, dark = false, defaultQuery = "" }: 
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder={compact ? "Search Worcester…" : "Search restaurants, parks, articles…"}
+        placeholder={compact ? "Search…" : "Search restaurants, parks, articles…"}
         className={
           dark
             ? "w-full rounded border border-stone-700 bg-stone-900 px-4 py-2 text-sm text-stone-100 placeholder:text-stone-500 focus:border-[#9e7040] focus:outline-none focus:ring-1 focus:ring-[#9e7040]/30"

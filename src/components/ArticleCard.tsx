@@ -6,13 +6,15 @@ import type { ArticleWithPlace } from "@/lib/queries";
 interface ArticleCardProps {
   article: ArticleWithPlace;
   featured?: boolean;
+  citySlug?: string;
 }
 
-export function ArticleCard({ article, featured = false }: ArticleCardProps) {
+export function ArticleCard({ article, featured = false, citySlug }: ArticleCardProps) {
+  const href = citySlug ? `/${citySlug}/articles/${article.slug}` : `/articles/${article.slug}`;
   if (featured) {
     return (
       <Link
-        href={`/articles/${article.slug}`}
+        href={href}
         className="group relative flex overflow-hidden rounded-sm"
         style={{ aspectRatio: "16/9" }}
       >
@@ -60,7 +62,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
 
   return (
     <Link
-      href={`/articles/${article.slug}`}
+      href={href}
       className="group flex flex-col overflow-hidden rounded-sm border border-[#dbd3c5] bg-white transition-colors hover:border-[#9e7040]/35"
     >
       <div className="relative overflow-hidden bg-[#ede5d8] aspect-[16/10]">

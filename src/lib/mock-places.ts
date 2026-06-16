@@ -1,4 +1,4 @@
-import { city } from "@/config/city";
+// Worcester-only seed data: city slug is hardcoded
 import { prisma } from "@/lib/db";
 import { toSlug } from "@/lib/utils";
 import type { PlaceCategory } from "@prisma/client";
@@ -232,7 +232,7 @@ export async function seedMockPlaces(): Promise<number> {
         hours: place.hours
           ? { weekdayDescriptions: place.hours }
           : undefined,
-        citySlug: city.slug,
+        citySlug: "worcester-ma",
         lastSyncedAt: new Date(),
       },
       update: {

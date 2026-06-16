@@ -1,4 +1,5 @@
-import { city } from "@/config/city";
+import { cities } from "@/config/city";
+const city = cities["worcester-ma"];
 import { prisma } from "@/lib/db";
 import { isWithinCityBounds, toSlug } from "@/lib/utils";
 import type { PlaceCategory } from "@prisma/client";

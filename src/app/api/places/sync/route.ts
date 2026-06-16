@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { navGroups } from "@/config/city";
+import { allNavGroups, getCity } from "@/config/city";
 import { prisma } from "@/lib/db";
 import { fetchOverpassPlaces } from "@/lib/overpass";
 import type { NavGroupKey } from "@/config/city";
@@ -8,37 +8,40 @@ import type { PlaceCategory } from "@prisma/client";
 export const dynamic = "force-dynamic";
 
 // Only skip OSM sync once the DB has a healthy number of real places.
-// The mock seed adds ~20 places, so a threshold of 50 ensures the first real
-// OSM fetch always runs regardless of mock data.
 const SYNC_THRESHOLD = 50;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const group = searchParams.get("group") as NavGroupKey | null;
+  const cityParam = searchParams.get("city") ?? "";
 
-  if (!group || !(group in navGroups)) {
+  if (!group || !(group in allNavGroups)) {
     return NextResponse.json({ error: "Invalid group" }, { status: 400 });
   }
 
-  const groupDef = navGroups[group];
+  const cityConfig = getCity(cityParam);
+  if (!cityConfig) {
+    return NextResponse.json({ error: "Invalid city" }, { status: 400 });
+  }
+
+  const groupDef = allNavGroups[group];
   const categories = groupDef.categories as unknown as PlaceCategory[];
 
-  // Skip only if we already have a full set of OSM places for this group
+  // Skip only if we already have a full set of OSM places for this city+group
   const placeCount = await prisma.place.count({
-    where: { category: { in: categories }, citySlug: "worcester-ma" },
+    where: { category: { in: categories }, citySlug: cityConfig.slug },
   });
 
   if (placeCount >= SYNC_THRESHOLD) {
     return NextResponse.json({ synced: 0, cached: true });
   }
 
-  // Abort Overpass if it takes too long (safety net for serverless timeouts)
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25000);
 
   let places;
   try {
-    places = await fetchOverpassPlaces(groupDef.osmTags, controller.signal);
+    places = await fetchOverpassPlaces(groupDef.osmTags, cityConfig, controller.signal);
   } catch (err) {
     console.error("[sync] Overpass fetch failed:", err instanceof Error ? err.message : err);
     return NextResponse.json({ error: "Overpass API unavailable" }, { status: 503 });

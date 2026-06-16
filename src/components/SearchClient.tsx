@@ -3,26 +3,39 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { navGroups } from "@/config/city";
 import type { NavGroupKey } from "@/config/city";
 import { categoryLabel } from "@/lib/utils";
 import type { SearchResult } from "@/lib/search";
 import type { PlaceCategory } from "@prisma/client";
 
+type NavGroupDef = {
+  label: string;
+  categories: readonly string[];
+  subFilters: readonly { value: string; label: string }[];
+};
+
 interface SearchClientProps {
   initialQuery: string;
   initialGroup?: NavGroupKey;
   initialCategory?: PlaceCategory;
+  citySlug: string;
+  cityName: string;
+  cityNavGroups: Record<string, NavGroupDef>;
 }
 
-export function SearchClient({ initialQuery, initialGroup, initialCategory }: SearchClientProps) {
+export function SearchClient({
+  initialQuery,
+  initialGroup,
+  initialCategory,
+  citySlug,
+  cityName,
+  cityNavGroups,
+}: SearchClientProps) {
   const router = useRouter();
   const group = initialGroup;
-  const groupDef = group ? navGroups[group] : null;
+  const groupDef: NavGroupDef | null = group && group in cityNavGroups ? cityNavGroups[group] : null;
 
   const [query, setQuery] = useState(initialQuery);
-  // Discard any initialCategory that doesn't belong to the current group
-  // (happens when navigating between groups with a stale URL)
   const validInitialCategory =
     initialCategory && groupDef
       ? (groupDef.categories as readonly string[]).includes(initialCategory)
@@ -36,24 +49,21 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
   const [syncVersion, setSyncVersion] = useState(0);
   const abortRef = useRef<AbortController | null>(null);
 
-  // On group page mount: sync places from OpenStreetMap in the background.
-  // If new places were added, bump syncVersion to re-run the search effect.
   useEffect(() => {
     if (!group) return;
     setSyncing(true);
-    fetch(`/api/places/sync?group=${group}`)
+    fetch(`/api/places/sync?group=${group}&city=${citySlug}`)
       .then((r) => r.json())
       .then((data: { synced?: number; cached?: boolean }) => {
         if (data.synced && data.synced > 0) setSyncVersion((v) => v + 1);
       })
-      .catch(() => {/* sync failure is non-fatal */})
+      .catch(() => {/* non-fatal */})
       .finally(() => setSyncing(false));
-  }, [group]);
+  }, [group, citySlug]);
 
   useEffect(() => {
     const trimmed = query.trim();
 
-    // Group pages show results even with no query; general search requires a query
     if (!trimmed && !group) {
       setResults([]);
       return;
@@ -70,6 +80,7 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
         if (trimmed) params.set("q", trimmed);
         if (group) params.set("group", group);
         if (category) params.set("category", category);
+        params.set("city", citySlug);
 
         const res = await fetch(`/api/search?${params}`, {
           signal: abortRef.current.signal,
@@ -77,12 +88,11 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
         const data = (await res.json()) as SearchResult[];
         setResults(data);
 
-        // Sync URL
         const urlParams = new URLSearchParams();
         if (trimmed) urlParams.set("q", trimmed);
         if (group) urlParams.set("group", group);
         if (category) urlParams.set("category", category);
-        router.replace(`/search?${urlParams}`, { scroll: false });
+        router.replace(`/${citySlug}/search?${urlParams}`, { scroll: false });
       } catch (err) {
         if ((err as Error).name !== "AbortError") setResults([]);
       } finally {
@@ -91,7 +101,7 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [query, group, category, router, syncVersion]);
+  }, [query, group, category, router, syncVersion, citySlug]);
 
   function toggleCategory(val: PlaceCategory) {
     setCategory((prev) => (prev === val ? undefined : val));
@@ -99,7 +109,6 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
 
   return (
     <>
-      {/* Search input */}
       <div className="max-w-xl">
         <div className="flex w-full gap-2">
           <input
@@ -126,7 +135,6 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
         </div>
       </div>
 
-      {/* Sub-category filters (only shown inside a group) */}
       {groupDef && groupDef.subFilters.length > 0 && (
         <div className="mt-6 flex flex-wrap gap-2">
           {groupDef.subFilters.map((f) => (
@@ -146,18 +154,17 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
         </div>
       )}
 
-      {/* Results */}
       <div className="mt-10">
         {loading ? (
           <p className="text-sm text-stone-400">Searching…</p>
         ) : syncing && results.length === 0 ? (
-          <p className="text-sm text-stone-400">Finding Worcester places…</p>
+          <p className="text-sm text-stone-400">Finding {cityName} places…</p>
         ) : !query.trim() && !group ? (
           <p className="text-stone-500">Start typing to see results.</p>
         ) : results.length === 0 ? (
           <p className="text-stone-500">
             {query.trim()
-              ? `No results for "${query}" in Worcester.`
+              ? `No results for "${query}" in ${cityName}.`
               : `No ${groupDef?.label.toLowerCase() ?? "places"} found yet.`}
           </p>
         ) : (
@@ -175,8 +182,8 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
                 <Link
                   href={
                     result.type === "article"
-                      ? `/articles/${result.slug}`
-                      : `/places/${result.slug}`
+                      ? `/${citySlug}/articles/${result.slug}`
+                      : `/${citySlug}/places/${result.slug}`
                   }
                   className="mt-1.5 block font-display text-2xl italic font-bold text-[#0f0c0a] transition hover:text-[#9e7040]"
                 >

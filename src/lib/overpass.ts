@@ -1,7 +1,7 @@
 import https from "https";
-import { city } from "@/config/city";
 import { toSlug } from "@/lib/utils";
 import type { PlaceCategory } from "@prisma/client";
+import type { CityConfig } from "@/config/city";
 
 export interface NormalizedOsmPlace {
   slug: string;
@@ -32,6 +32,9 @@ interface OverpassResponse {
 function mapCategory(tags: Record<string, string>): PlaceCategory {
   const amenity = tags.amenity ?? "";
   const leisure = tags.leisure ?? "";
+  const sport = tags.sport ?? "";
+  const landuse = tags.landuse ?? "";
+  if (sport === "skiing" || landuse === "winter_sports") return "SKI";
   if (leisure === "golf_course") return "GOLF";
   if (amenity === "cafe" || amenity === "coffee_shop") return "CAFE";
   if (amenity === "bar" || amenity === "pub" || amenity === "night_club") return "BAR";
@@ -85,9 +88,10 @@ function httpsPost(url: string, body: string, signal?: AbortSignal): Promise<str
 
 export async function fetchOverpassPlaces(
   osmTagFilter: string,
+  cityConfig: Pick<CityConfig, "slug" | "name" | "state" | "bounds">,
   signal?: AbortSignal,
 ): Promise<NormalizedOsmPlace[]> {
-  const { bounds, slug: citySlug } = city;
+  const { bounds, slug: citySlug, name, state } = cityConfig;
   const bbox = `${bounds.south},${bounds.west},${bounds.north},${bounds.east}`;
   const query = `[out:json][timeout:20];(node${osmTagFilter}(${bbox});way${osmTagFilter}(${bbox});relation${osmTagFilter}(${bbox}););out center;`;
 
@@ -103,20 +107,20 @@ export async function fetchOverpassPlaces(
 
   for (const el of data.elements) {
     const tags = el.tags ?? {};
-    const name = tags.name;
-    if (!name) continue;
+    const elName = tags.name;
+    if (!elName) continue;
 
     const lat = el.lat ?? el.center?.lat;
     const lng = el.lon ?? el.center?.lon;
     if (!lat || !lng) continue;
 
-    const slug = toSlug(name);
+    const slug = toSlug(elName);
     if (!slug || seen.has(slug)) continue;
     seen.add(slug);
 
     const houseNum = tags["addr:housenumber"] ?? "";
     const street = tags["addr:street"] ?? "";
-    const address = [houseNum, street].filter(Boolean).join(" ") || "Worcester, MA";
+    const address = [houseNum, street].filter(Boolean).join(" ") || `${name}, ${state}`;
 
     const phone = tags.phone ?? tags["contact:phone"] ?? null;
     const website = tags.website ?? tags["contact:website"] ?? null;
@@ -124,7 +128,7 @@ export async function fetchOverpassPlaces(
 
     places.push({
       slug,
-      name,
+      name: elName,
       address,
       lat,
       lng,

@@ -20,6 +20,7 @@ export async function PUT(request: Request, context: RouteContext) {
     body?: string;
     coverImage?: string;
     placeId?: string | null;
+    citySlug?: string;
     status?: "DRAFT" | "PUBLISHED";
   };
 
@@ -54,6 +55,7 @@ export async function PUT(request: Request, context: RouteContext) {
       body: body.body,
       coverImage: body.coverImage || null,
       placeId: body.placeId || null,
+      citySlug: body.citySlug ?? existing.citySlug,
       status: body.status ?? "DRAFT",
       publishedAt,
     },

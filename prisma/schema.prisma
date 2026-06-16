@@ -15,6 +15,7 @@ enum PlaceCategory {
   MUSEUM
   ATTRACTION
   GOLF
+  SKI
   OTHER
 }
 
@@ -59,6 +60,7 @@ model Article {
   status      ArticleStatus @default(DRAFT)
   coverImage  String?
   publishedAt DateTime?
+  citySlug    String        @default("worcester-ma")
   placeId     String?
   place       Place?        @relation(fields: [placeId], references: [id], onDelete: SetNull)
   tags        Tag[]
@@ -67,6 +69,7 @@ model Article {
 
   @@index([status])
   @@index([publishedAt])
+  @@index([citySlug])
 }
 
 model Tag {
@@ -91,6 +94,7 @@ model Event {
   startDate   DateTime
   endDate     DateTime?
   location    String?
+  citySlug    String    @default("worcester-ma")
   placeId     String?
   place       Place?    @relation(fields: [placeId], references: [id], onDelete: SetNull)
   isPublished Boolean   @default(false)
@@ -99,4 +103,5 @@ model Event {
 
   @@index([startDate])
   @@index([isPublished])
+  @@index([citySlug])
 }

@@ -27,10 +27,10 @@ export const metadata: Metadata = {
     default: `${siteConfig.name} | Worcester, MA`,
     template: `%s | ${siteConfig.name}`,
   },
-  description: siteConfig.description,
+  description: "Your editorial guide to New England's finest towns.",
   openGraph: {
     title: siteConfig.name,
-    description: siteConfig.description,
+    description: "Your editorial guide to New England's finest towns.",
     url: siteConfig.url,
     siteName: siteConfig.name,
     locale: "en_US",

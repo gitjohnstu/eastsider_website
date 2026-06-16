@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState } from "react";
 import type { Article, Place } from "@prisma/client";
+import { cityList } from "@/config/city";
 
 interface ArticleFormProps {
   places: Place[];
@@ -16,6 +17,7 @@ export function ArticleForm({ places, article }: ArticleFormProps) {
   const [body, setBody] = useState(article?.body ?? "");
   const [coverImage, setCoverImage] = useState(article?.coverImage ?? "");
   const [placeId, setPlaceId] = useState(article?.placeId ?? "");
+  const [citySlug, setCitySlug] = useState(article?.citySlug ?? "worcester-ma");
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(
     article?.status ?? "DRAFT",
   );
@@ -52,6 +54,7 @@ export function ArticleForm({ places, article }: ArticleFormProps) {
             body,
             coverImage,
             placeId: placeId || null,
+            citySlug,
             status,
           }),
         },
@@ -137,6 +140,21 @@ export function ArticleForm({ places, article }: ArticleFormProps) {
             </button>
           ))}
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-stone-700">City</label>
+        <select
+          value={citySlug}
+          onChange={(e) => setCitySlug(e.target.value)}
+          className="mt-1 rounded-lg border border-stone-300 px-3 py-2"
+        >
+          {cityList.map((city) => (
+            <option key={city.slug} value={city.slug}>
+              {city.name}, {city.state}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>

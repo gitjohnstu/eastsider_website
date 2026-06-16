@@ -15,6 +15,7 @@ export async function POST(request: Request) {
     body?: string;
     coverImage?: string;
     placeId?: string | null;
+    citySlug?: string;
     status?: "DRAFT" | "PUBLISHED";
   };
 
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
       body: body.body,
       coverImage: body.coverImage || null,
       placeId: body.placeId || null,
+      citySlug: body.citySlug ?? "worcester-ma",
       status: body.status ?? "DRAFT",
       publishedAt: body.status === "PUBLISHED" ? new Date() : null,
     },
