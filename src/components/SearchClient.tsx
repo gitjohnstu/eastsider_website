@@ -21,7 +21,15 @@ export function SearchClient({ initialQuery, initialGroup, initialCategory }: Se
   const groupDef = group ? navGroups[group] : null;
 
   const [query, setQuery] = useState(initialQuery);
-  const [category, setCategory] = useState<PlaceCategory | undefined>(initialCategory);
+  // Discard any initialCategory that doesn't belong to the current group
+  // (happens when navigating between groups with a stale URL)
+  const validInitialCategory =
+    initialCategory && groupDef
+      ? (groupDef.categories as readonly string[]).includes(initialCategory)
+        ? initialCategory
+        : undefined
+      : initialCategory;
+  const [category, setCategory] = useState<PlaceCategory | undefined>(validInitialCategory);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);

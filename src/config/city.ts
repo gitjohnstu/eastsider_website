@@ -5,10 +5,10 @@ export const city = {
   country: "US",
   center: { lat: 42.2626, lng: -71.8023 },
   bounds: {
-    north: 42.32,
-    south: 42.2,
-    east: -71.72,
-    west: -71.88,
+    north: 42.36,
+    south: 42.17,
+    east: -71.67,
+    west: -71.97,
   },
 } as const;
 
