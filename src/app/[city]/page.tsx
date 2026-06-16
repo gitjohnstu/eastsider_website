@@ -37,7 +37,7 @@ export default async function CityHomePage({ params }: CityHomeProps) {
             </span>
           </div>
           <div className="h-[1.5px] w-full" style={{ backgroundColor: cityConfig.theme.border }} />
-          <h1 className="mt-6 font-display text-6xl italic font-bold tracking-[-0.02em] text-[#0f0c0a] leading-none sm:text-8xl">
+          <h1 className="mt-6 font-display text-4xl italic font-bold tracking-[-0.02em] text-[#0f0c0a] leading-none sm:text-6xl lg:text-8xl">
             Eastsider
           </h1>
           <div className="mt-7 flex items-center gap-5">

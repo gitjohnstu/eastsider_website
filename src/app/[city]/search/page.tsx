@@ -49,7 +49,7 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
           <p className="text-[9px] font-semibold uppercase tracking-[0.55em]" style={{ color: cityConfig.theme.accent + "b3" }}>
             {cityConfig.name}, {cityConfig.state}
           </p>
-          <h1 className="mt-4 font-display text-6xl italic font-bold tracking-tight text-[#0f0c0a]">
+          <h1 className="mt-4 font-display text-4xl italic font-bold tracking-tight text-[#0f0c0a] sm:text-6xl">
             {groupLabel}
           </h1>
         </div>

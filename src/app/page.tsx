@@ -14,7 +14,7 @@ export default function CityPickerPage() {
         <p className="text-[9px] font-semibold uppercase tracking-[0.65em] text-[#9e7040]/60 mb-6">
           A Regional Guide
         </p>
-        <h1 className="font-display text-7xl italic font-bold tracking-tight text-white sm:text-8xl">
+        <h1 className="font-display text-5xl italic font-bold tracking-tight text-white sm:text-7xl lg:text-8xl">
           {siteConfig.name}
         </h1>
         <div className="mt-6 flex items-center justify-center gap-4">
@@ -36,7 +36,7 @@ export default function CityPickerPage() {
             className="group relative overflow-hidden rounded-sm border border-white/8 transition-all hover:border-white/20"
             style={{ backgroundColor: city.theme.headerBg }}
           >
-            <div className="px-8 py-10">
+            <div className="px-6 py-8 sm:px-8 sm:py-10">
               <p
                 className="text-[9px] font-semibold uppercase tracking-[0.5em] mb-4 transition-colors"
                 style={{ color: city.theme.accent + "99" }}

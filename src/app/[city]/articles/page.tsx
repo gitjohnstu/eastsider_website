@@ -33,7 +33,7 @@ export default async function ArticlesPage({ params }: ArticlesPageProps) {
           <p className="text-[9px] font-semibold uppercase tracking-[0.55em]" style={{ color: cityConfig.theme.accent + "b3" }}>
             {cityConfig.name}, {cityConfig.state}
           </p>
-          <h1 className="mt-4 font-display text-6xl italic font-bold tracking-tight text-[#0f0c0a]">
+          <h1 className="mt-4 font-display text-4xl italic font-bold tracking-tight text-[#0f0c0a] sm:text-6xl">
             Articles
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-stone-500">
